@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/markmdoza/tinyapp/issues"
   },
-  "homepage": "https://github.com/markmdoza/tinyapp#readme"
+  "homepage": "https://github.com/markmdoza/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
