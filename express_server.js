@@ -9,14 +9,14 @@ function generateRandomString(length) {
   // Display characters to work with.
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   // Hold the result in a variable.
-  let result = ' ';
+  let urlID = ' ';
   // Loop through the characters variable.
   for (let i = 0; i < length; i++) {
     // Add result and characters together.
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+    urlID += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   // Return a string of 6 random alphanumeric characters.
-  return result;
+  return urlID;
 }
 
 console.log(generateRandomString(5));
