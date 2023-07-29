@@ -13,7 +13,6 @@
 
   <body>
     <%- include('partials/_header') %>
-    <a href="#">Create a new URL</a>
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -22,8 +21,15 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
       </div>
-      <div class="card-footer text-muted"></div>
+      <div class="card-footer text-muted">
+        <h4 class="card-title">Edit</h4>
+        <form action="/urls/<%= id %>" method="POST">New URL:
+          <input type="text" placeholder="New URL">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
     </div>
+
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
