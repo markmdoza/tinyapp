@@ -112,7 +112,7 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email and Password are required.');
   }
   // If email exists in users object
-  const existingUser = Object.values(users).find(user => user.email === email);
+  const existingUser = getUserByEmail(email);
   if (existingUser) {
     return res.status(400).send('Email already exists.');
   }
