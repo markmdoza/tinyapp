@@ -16,6 +16,8 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
         <% if (user) { %> 
         <span class="nav-item nav-link">Logged in as: <%= user.email %></span>
         <form action="/logout" method="POST">
@@ -24,7 +26,7 @@
         <% } else { %>
         <form action="/login" method="POST">
           <input type="text" name="email" placeholder="Email">
-          <input type="password", name="password", placeholder="Password">
+          <input type="password" name="password" placeholder="Password">
           <button type="submit">Login</button>
           </form>
           <% } %>

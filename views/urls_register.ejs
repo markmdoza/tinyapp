@@ -17,19 +17,23 @@
     <title>TinyApp User Registration</title>
   </head>
   <body>
-    <%- include('partials/_header', { username: username }) %>
-<h2>Please fill in the following information to complete a new user registration.</h2>
+    <%- include('partials/_header', { user: username }) %>
+    <main style="margin: 1em;">
+<h2>Please fill in the following information to complete a new user registration</h2>
 
-  <form method="POST" action="/register">
-    <label for="email">Email</label>
-    <input type="email" name="email">
-    <br />
+  <form class="form-inline"  method="POST" action="/register">
+    <div class="form-group mb-2">
 
-    <label for="password">Password</label>
-    <input type="password" name="password">
-    <br />
-
-    <input type="submit" value="Login">
+      <label for="email">Email</label>
+      <input type="email" name="email">
+      <br />
+      
+      <label for="password">Password</label>
+      <input type="password" name="password">
+      <br />
+      
+      <input type="submit" value="Login">
+    </div>
   </form>
 
       <!-- Bootstrap JS -->
