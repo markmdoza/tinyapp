@@ -1,9 +1,13 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
+
+// Middle-wares for body-parser and cookies.
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 function generateRandomString() {
   // Set length to 6.
@@ -28,23 +32,34 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
+// GET ROUTES
 app.get('/', (req,res) => {
-  res.send('Hello!');
+  const templateVars = {
+    username: req.cookies['username'],
+  };
+  res.render('index', templateVars);
 });
 
 app.get('/urls', (req, res) => {
-  const urlData = { urls: urlDatabase};
+  const urlData = { 
+    urls: urlDatabase,
+    username: req.cookies['username'],
+  };
   res.render('urls_index', urlData);
 });
 
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  const templateVars = { 
+    username: req.cookies["username"],
+  };
+  res.render('urls_new', templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"],
   };
   res.render("urls_show", templateVars);
 });
@@ -64,6 +79,11 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get('/hello', (req, res) => {
+  res.send('<html><body>Hello <b>World</b></body></html>\n');
+});
+
+// POST ROUTES
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.newLongURL;
@@ -88,9 +108,6 @@ app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
-});
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
 app.listen(PORT, () => {
