@@ -34,19 +34,14 @@ const urlDatabase = {
 
 const users = {
   user1: {
-    id: 1,
+    id: "userRandomID",
     email: "user1@email.com",
     password: "123",
   },
   user2: {
-    id: 2,
+    id: "user2RandomID",
     email: "user2@email.com",
     password: "abc",
-  },
-  user3: {
-    id: 3,
-    email: "user3email.com",
-    password: "456",
   },
 };
 
@@ -100,7 +95,6 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
@@ -110,6 +104,30 @@ app.get('/hello', (req, res) => {
 });
 
 // POST ROUTES
+
+app.post('/register', (req, res) => {
+  const { email, password } = req.body;
+  // Condition if email or password is left empty
+  if(!email || !password) {
+    return res.status(400).send('Email and Password are required.');
+  }
+  // If email exists in users object
+  const existingUser = Object.values(users).find(user => user.email === email);
+  if (existingUser) {
+    return res.status(400).send('Email already exists.');
+  }
+  const userID = generateRandomString(); // Generate user & add it to users obj
+  const newUser = {
+    id: userID,
+    email,
+    password,
+  };
+  users[userID] = newUser;
+  res.cookie('user_id', userID);
+  console.log(req.body);
+  res.redirect('/urls');
+});
+
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.newLongURL;
@@ -125,8 +143,15 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const { username } = req.body;
-  res.cookie('username', username);
+  const { email, password } = req.body;
+  const foundUser = Object.values(users).find(user => user.email === email);
+  if(!foundUser) {
+    return res.send(`User with email ${email} does not exist.`);
+  }
+  if (foundUser.password !== password) {
+    return res.send('Incorrect password');
+  }
+  res.cookie('user_id', foundUser.id);
   res.redirect('/urls');
 });
 

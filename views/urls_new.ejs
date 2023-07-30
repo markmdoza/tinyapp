@@ -15,11 +15,11 @@
       crossorigin="anonymous"
     />
 
-    <title>New URL - TinyApp Example</title>
+    <title>TinyApp - Create TinyURL</title>
   </head>
 
   <body>
-    <%- include('partials/_header', { username: username }) %>
+    <%- include('partials/_header', { user: username }) %>
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
       <form class="form-inline" action="/urls" method="POST">
