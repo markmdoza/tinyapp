@@ -23,9 +23,11 @@ function generateRandomString() {
   }
   // Return a string of 6 random alphanumeric characters.
   return urlID;
-}
+};
 
-// console.log(generateRandomString(5));
+function getUserByEmail(email) {
+  return Object.values(users).find(user => user.email === email);
+};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -163,8 +165,8 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/urls');
+  res.clearCookie('user_id');
+  res.redirect('/login');
 })
 
 app.post("/urls/:id/delete", (req, res) => {
