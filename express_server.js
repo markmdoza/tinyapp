@@ -151,12 +151,12 @@ app.post('/urls', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const foundUser = Object.values(users).find(user => user.email === email);
+  const foundUser = getUserByEmail(email);
   if(!foundUser) {
-    return res.send(`User with email ${email} does not exist.`);
+    return res.status(403).send(`User with email ${email} does not exist.`);
   }
   if (foundUser.password !== password) {
-    return res.send('Incorrect password');
+    return res.status(403).send('Incorrect password');
   }
   res.cookie('user_id', foundUser.id);
   res.redirect('/urls');
