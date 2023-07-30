@@ -32,6 +32,24 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
+const users = {
+  user1: {
+    id: 1,
+    email: "user1@email.com",
+    password: "123",
+  },
+  user2: {
+    id: 2,
+    email: "user2@email.com",
+    password: "abc",
+  },
+  user3: {
+    id: 3,
+    email: "user3email.com",
+    password: "456",
+  },
+};
+
 // GET ROUTES
 app.get('/', (req,res) => {
   const templateVars = {
