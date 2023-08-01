@@ -19,7 +19,7 @@
   </head>
 
   <body>
-    <%- include('partials/_header', { user: username }) %>
+    <%- include('partials/_header', { user_id: userID }) %>
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
       <form class="form-inline" action="/urls" method="POST">

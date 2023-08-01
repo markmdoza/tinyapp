@@ -14,26 +14,24 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp User Registration</title>
+    <title>TinyApp - Create Account</title>
   </head>
   <body>
-    <%- include('partials/_header', { user: username }) %>
+    <%- include('partials/_header', { user_id: userID }) %>
     <main style="margin: 1em;">
-<h2>Please fill in the following information to complete a new user registration</h2>
+<h2>Create Account</h2>
+  <form method="POST" action="/register">
+    <div class="form-group">
+      <label for="email">Email address</label>
+        <input type="email" name="email" class="form-control" placeholder="Enter email">
+      </div>
 
-  <form class="form-inline"  method="POST" action="/register">
-    <div class="form-group mb-2">
-
-      <label for="email">Email</label>
-      <input type="email" name="email">
-      <br />
-      
+    <div class="form-group">
       <label for="password">Password</label>
-      <input type="password" name="password">
-      <br />
-      
-      <input type="submit" value="Login">
+      <input type="password" name="password" class="form-control" placeholder="Password">
+      </div>
     </div>
+      <input type="submit" value="Register" class="btn btn-primary">
   </form>
 
       <!-- Bootstrap JS -->
