@@ -1,3 +1,10 @@
+<style>
+  #logged-in {
+    color: black;
+    margin-right: 10px;
+  }
+</style>
+
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -23,9 +30,9 @@
         <a class="nav-item nav-link" href="/login">Login</a>
         <a class="nav-item nav-link" href="/register">Register</a>
         <% } else { %> 
-          <span class="nav-item">Logged in as: <%= user.email %></span>
+          <span class="navbar-text mr-2" id="logged-in">Logged in as: <%= user.email %></span>
           <form action="/logout" method="POST">
-            <button type="submit">Logout</button>
+            <button type="submit" class="btn btn-outline-dark">Logout</button>
           </form>
           <% } %>
         </div>
