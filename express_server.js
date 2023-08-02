@@ -1,5 +1,5 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
@@ -8,7 +8,11 @@ app.set('view engine', 'ejs');
 
 // Middle-wares for body-parser and cookies.
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['moon', 'sun', 'stars'],
+  maxAge: 24 * 60 * 60 * 1000,
+}));
 
 function generateRandomString() {
   // Set length to 6.
@@ -67,19 +71,19 @@ const users = {
 // GET ROUTES
 app.get('/', (req,res) => {
   const templateVars = {
-    userID: req.cookies['user_id'],
+    userID: req.session.user_id,
   };
   res.render('index', templateVars);
 });
 
 app.get('/urls', (req, res) => {
-  const userID = req.cookies["user_id"];
-  const user = users[userID];
+  const userID = req.session.user_id;
   if(!userID) {
     res.status(401).send("Please login or create an account to view your URLs");
     return;
   }
 
+  const user = users[userID];
   const userURLs = urlsForUser(userID);
   const urlData = { 
     urls: userURLs,
@@ -90,24 +94,24 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  const userID = req.cookies["user_id"]
+  const userID = req.session.user_id;
   if(userID) {
     res.redirect("/urls")
   }
   const templateVars = {
-    userID: req.cookies['user_id'],
+    userID: req.session.user_id,
   };
   res.render('urls_register', templateVars);
 });
 
 app.get('/login', (req, res) => {
-  const userID = req.cookies["user_id"]
+  const userID = req.session.user_id;
   if(userID) {
     res.redirect("/urls")
   }
 
   const templateVars = {
-    userID: req.cookies["user.email"],
+    userID: req.session.user_id,
   }
   // const userLoggedIn = users[userID];
 
@@ -116,7 +120,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   if(!userID) {
     res.redirect("/login")
   }
@@ -129,7 +133,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
   const shortURL = req.params.id;
 
@@ -190,12 +194,12 @@ app.post('/register', (req, res) => {
   };
 
   users[userID] = newUser;
-  res.cookie('user_id', userID);
+  req.session.user_id = userID;
   res.redirect('/urls');
 });
 
 app.post('/urls', (req, res) => {
-  const userID = req.cookies["user_id"]
+  const userID = req.session.user_id;
   if(!userID) {
     const errorMsg = ("Please login or create an account to continue.");
     const templateVars = {
@@ -216,7 +220,7 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.newLongURL;
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
 
   if(!urlDatabase[shortURL]) {
     res.status(404).send("URL not found.");
@@ -245,25 +249,22 @@ app.post('/login', (req, res) => {
   if(!foundUser) {
     return res.status(403).send(`User with email ${email} does not exist.`);
   }
-  if (foundUser.password !== password) {
+  if (!bcrypt.compareSync(password, foundUser.password)) {
     return res.status(403).send('Incorrect password');
   }
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  bcrypt.compareSync("123", hashedPassword);
-  bcrypt.compareSync("abc", hashedPassword);
 
-  res.cookie('user_id', foundUser.id);
+  req.session.user_id = foundUser.id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect('/login');
 })
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
 
   if(!urlDatabase[shortURL]) {
     res.status(404).send("URL not found.");
