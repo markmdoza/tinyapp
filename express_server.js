@@ -58,8 +58,6 @@ app.get('/', (req,res) => {
 app.get('/urls', (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
-  // console.log(user);
-  console.log({user});
   const urlData = { 
     urls: urlDatabase,
     userID,
@@ -155,11 +153,19 @@ app.post('/register', (req, res) => {
   };
   users[userID] = newUser;
   res.cookie('user_id', userID);
-  console.log(req.body);
   res.redirect('/urls');
 });
 
 app.post('/urls', (req, res) => {
+  const userID = req.cookies["user_id"]
+  if(userID) {
+    const errorMsg = "Please login or create an account to continue.";
+    const templateVars = {
+    userID: null,
+    error: errorMsg
+    };
+    res.render("urls_new", templateVars);
+  }
   const { longURL } = req.body;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
