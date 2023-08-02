@@ -30,9 +30,15 @@ function generateRandomString() {
   return urlID;
 };
 
-function getUserByEmail(email, users) {
-  return Object.values(users).find(user => user.email === email);
-};
+const getUserByEmail = function(email, database) {
+  for (const userID in database) {
+    const user = database[userID];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+}
 
 function urlsForUser(id) {
   const userURLs = {};
