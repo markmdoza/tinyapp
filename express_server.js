@@ -194,7 +194,7 @@ app.post('/register', (req, res) => {
 app.post('/urls', (req, res) => {
   const userID = req.cookies["user_id"]
   if(!userID) {
-    const errorMsg = "Please login or create an account to continue.";
+    const errorMsg = ("Please login or create an account to continue.");
     const templateVars = {
     userID: null,
     error: errorMsg
@@ -213,6 +213,24 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.newLongURL;
+  const userID = req.cookies["user_id"];
+
+  if(!urlDatabase[shortURL]) {
+    res.status(404).send("URL not found.");
+    return;
+  }
+
+  if(!userID) {
+    res.status(401).send("Please login or create an account to view the URL");
+    return;
+  }
+
+  const userURLs = urlsForUser(userID);
+  if(!userURLs[shortURL]) {
+    res.status(403).send("This URL is not under your account");
+    return;
+  }
+
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 });
@@ -238,6 +256,24 @@ app.post('/logout', (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
+  const userID = req.cookies["user_id"];
+
+  if(!urlDatabase[shorturl]) {
+    res.status(404).send("URL not found.");
+    return;
+  }
+
+  if(!userID) {
+    res.status(401).send("Please login or create an account to view the URL");
+    return;
+  }
+
+  const userURLs = urlsForUser(userID);
+  if(!userURLs[shortURL]) {
+    res.status(403).send("This URL is not under your account");
+    return;
+  }
+
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
