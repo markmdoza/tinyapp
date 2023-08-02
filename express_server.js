@@ -248,6 +248,10 @@ app.post('/login', (req, res) => {
   if (foundUser.password !== password) {
     return res.status(403).send('Incorrect password');
   }
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  bcrypt.compareSync("123", hashedPassword);
+  bcrypt.compareSync("abc", hashedPassword);
+
   res.cookie('user_id', foundUser.id);
   res.redirect('/urls');
 });
@@ -261,7 +265,7 @@ app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
   const userID = req.cookies["user_id"];
 
-  if(!urlDatabase[shorturl]) {
+  if(!urlDatabase[shortURL]) {
     res.status(404).send("URL not found.");
     return;
   }
