@@ -1,7 +1,7 @@
 const express = require('express');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
-const { getUserByEmail } = require('./helpers');
+const getUserByEmail = require('./helpers');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -43,11 +43,11 @@ function urlsForUser(id) {
 
 const urlDatabase = {
   b6UTxQ: {
-    longURL: "https://www.reddit.com",
+    longURL: "https://www.tsn.ca",
     userID: "aJ48lW",
   },
   i3BoGr: {
-    longURL: "https://www.youtube.com",
+    longURL: "https://www.runescape.com",
     userID: "aJ48lW",
   },
 };
@@ -69,7 +69,7 @@ const users = {
 app.get('/', (req,res) => {
   const templateVars = {
     userID: req.session.user_id,
-  };
+  }
   res.render('index', templateVars);
 });
 
@@ -86,7 +86,7 @@ app.get('/urls', (req, res) => {
     urls: userURLs,
     userID,
     user,
-  };
+  }
   res.render('urls_index', urlData);
 });
 
@@ -97,7 +97,7 @@ app.get('/register', (req, res) => {
   }
   const templateVars = {
     userID: req.session.user_id,
-  };
+  }
   res.render('urls_register', templateVars);
 });
 
@@ -106,13 +106,9 @@ app.get('/login', (req, res) => {
   if(userID) {
     res.redirect("/urls")
   }
-
   const templateVars = {
     userID: req.session.user_id,
   }
-  // const userLoggedIn = users[userID];
-
-  // console.log(templateVars);
   res.render('urls_login', templateVars);
 });
 
@@ -125,7 +121,7 @@ app.get('/urls/new', (req, res) => {
   const templateVars = { 
     userID,
     user,
-  };
+  }
   res.render('urls_new', templateVars);
 });
 
@@ -138,19 +134,17 @@ app.get("/urls/:id", (req, res) => {
     res.status(401).send("Please login or create an account to view the URL");
     return;
   }
-
   const userURLs = urlsForUser(userID);
   if(!userURLs[shortURL]) {
     res.status(403).send("This URL is not under your account");
     return;
   }
-
   const templateVars = { 
     id: shortURL, 
     longURL: urlDatabase[shortURL].longURL,
     userID,
     user,
-  };
+  }
   res.render("urls_show", templateVars);
 });
 
@@ -158,8 +152,8 @@ app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL];
   
-  if(longURL) {
-    res.redirect(longURL);
+  if(longURL && longURL.longURL) {
+    res.redirect(longURL.longURL);
   } else {
     res.status(404).send('Short URL not found');
   }
@@ -188,7 +182,7 @@ app.post('/register', (req, res) => {
     id: userID,
     email,
     password: hashedPassword, // Store hashed password of user.
-  };
+  }
 
   users[userID] = newUser;
   req.session.user_id = userID;
@@ -210,7 +204,7 @@ app.post('/urls', (req, res) => {
   urlDatabase[shortURL] = {
     longURL: longURL,
     userID: userID,
-  };
+  }
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -223,18 +217,15 @@ app.post('/urls/:id', (req, res) => {
     res.status(404).send("URL not found.");
     return;
   }
-
   if(!userID) {
     res.status(401).send("Please login or create an account to view the URL");
     return;
   }
-
   const userURLs = urlsForUser(userID);
   if(!userURLs[shortURL]) {
     res.status(403).send("This URL is not under your account");
     return;
   }
-
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 });
@@ -249,7 +240,6 @@ app.post('/login', (req, res) => {
   if (!bcrypt.compareSync(password, foundUser.password)) {
     return res.status(403).send('Incorrect password');
   }
-
   req.session.user_id = foundUser.id;
   res.redirect('/urls');
 });
@@ -267,18 +257,15 @@ app.post("/urls/:id/delete", (req, res) => {
     res.status(404).send("URL not found.");
     return;
   }
-
   if(!userID) {
     res.status(401).send("Please login or create an account to view the URL");
     return;
   }
-
   const userURLs = urlsForUser(userID);
   if(!userURLs[shortURL]) {
     res.status(403).send("This URL is not under your account");
     return;
   }
-
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
