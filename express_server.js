@@ -29,9 +29,25 @@ function getUserByEmail(email, users) {
   return Object.values(users).find(user => user.email === email);
 };
 
+function urlsForUser(id) {
+  const userURLs = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userURLs;
+}
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xk": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.reddit.com",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.youtube.com",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -58,8 +74,14 @@ app.get('/', (req,res) => {
 app.get('/urls', (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
+  if(!userID) {
+    res.status(401).send("Please login or create an account to view your URLs");
+    return;
+  }
+
+  const userURLs = urlsForUser(userID);
   const urlData = { 
-    urls: urlDatabase,
+    urls: userURLs,
     userID,
     user,
   };
@@ -108,9 +130,22 @@ app.get('/urls/new', (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
+  const shortURL = req.params.id;
+
+  if(!userID) {
+    res.status(401).send("Please login or create an account to view the URL");
+    return;
+  }
+
+  const userURLs = urlsForUser(userID);
+  if(!userURLs[shortURL]) {
+    res.status(403).send("This URL is not under your account");
+    return;
+  }
+
   const templateVars = { 
-    id: req.params.id, 
-    longURL: urlDatabase[req.params.id],
+    id: shortURL, 
+    longURL: urlDatabase[shortURL].longURL,
     userID,
     user,
   };
@@ -158,7 +193,7 @@ app.post('/register', (req, res) => {
 
 app.post('/urls', (req, res) => {
   const userID = req.cookies["user_id"]
-  if(userID) {
+  if(!userID) {
     const errorMsg = "Please login or create an account to continue.";
     const templateVars = {
     userID: null,
@@ -168,14 +203,17 @@ app.post('/urls', (req, res) => {
   }
   const { longURL } = req.body;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userID,
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.newLongURL;
-  urlDatabase[shortURL] = newLongURL;
+  urlDatabase[shortURL].longURL = newLongURL;
   res.redirect('/urls');
 });
 
